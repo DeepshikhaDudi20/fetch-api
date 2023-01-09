@@ -1,0 +1,81 @@
+{
+  "name": "interview",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently npm:start:client npm:start:server",
+    "start:client": "wait-on -l tcp:8443 && PORT=5000 HTTPS=true SSL_CRT_FILE=dev-certs/server-crt.pem SSL_KEY_FILE=dev-certs/server-key.pem TSC_COMPILE_ON_ERROR=true react-scripts start",
+    "start:server": "concurrently npm:dev:server:webpack npm:dev:server:nodemon",
+    "dev:server:webpack": "webpack --config webpack.config.server.js --watch",
+    "dev:server:nodemon": "rm -f build/server.js && wait-on -l build/server.js && nodemon build/server.js",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "react-scripts build",
+    "build:server": "webpack --config webpack.config.server.js",
+    "start:prod": "node build/server",
+    "test": "EXPRESS_PORT=8444 react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "https://localhost:8443",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.2.5",
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.10",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "eslint-plugin-jest-dom": "^4.0.3",
+    "eslint-plugin-testing-library": "^5.9.1",
+    "express": "^4.18.2",
+    "msw": "^0.49.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.6.1",
+    "react-scripts": "5.0.1",
+    "styled-components": "^5.3.6",
+    "typescript": "~4.9.4"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.10.12",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/express": "^4.17.15",
+    "@types/supertest": "^2.0.12",
+    "concurrently": "^7.6.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.7",
+    "enzyme-to-json": "^3.6.2",
+    "nodemon": "^2.0.20",
+    "react-test-renderer": "^18.2.0",
+    "supertest": "^6.3.3",
+    "ts-loader": "^9.4.2",
+    "wait-on": "^7.0.1",
+    "webpack-cli": "^5.0.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/index.ts"
+    ],
+    "coverageReporters": [
+      "text"
+    ]
+  }
+}
