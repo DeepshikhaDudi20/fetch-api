@@ -1,4 +1,7 @@
 import React, { useState, MouseEvent, useEffect } from 'react';
+import JourneyPlanner from './components/JourneyPlanner';
+import HomePage from './components/HomePage';
+import {  Route, Link, Routes, useNavigate } from 'react-router-dom'
 // import styled from "styled-components"
 
 import axios from 'axios';
@@ -14,6 +17,7 @@ interface Station {
 }
 
 const App: React.FC = () => {
+  const navigate = useNavigate();
   const [emptyOriginErrorMessage, setOriginErrorMessage] = useState(false);
   const [emptyDestinationMessage, setDestinationErrorMessage] = useState(false);
   const [price, setPrice] = useState(null)
@@ -52,10 +56,11 @@ const App: React.FC = () => {
       const originStationId = await fetchStationData(origin)
       const destinationStationId = await fetchStationData(destination)
       fetchJourneyDetails1(originStationId, destinationStationId)
+      navigate("/JourneyPlanner");
     }
   }
 
-// to fetch jouney api in specific objevt formet
+  // to fetch jouney api in specific objevt formet
   const fetchJourneyDetails = async (originStationId: any, destinationStationId: any) => {
     try {
       const journeyDetails: any = await axios.get('https://localhost:8443/journeys')
@@ -84,9 +89,9 @@ const App: React.FC = () => {
   // Return multiple data from journey api
   const fetchJourneyDetails1 = async (originStationId: any, destinationStationId: any) => {
     try {
-      const journeyDetails : any = await axios.get('https://localhost:8443/journeys')
+      const journeyDetails: any = await axios.get('https://localhost:8443/journeys')
         .then((res) => {
-         return res.data?.filter((responseJourneyDetail: any) => {
+          return res.data?.filter((responseJourneyDetail: any) => {
             return (responseJourneyDetail.origin === originStationId && responseJourneyDetail.destination === destinationStationId)
           })
         })
@@ -104,56 +109,21 @@ const App: React.FC = () => {
     setOriginErrorMessage(false);
   };
 
-    // On change of destination input, set origin input value and clear error message
+  // On change of destination input, set origin input value and clear error message
   const onDestinationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDestination(event.target.value);
     setDestinationErrorMessage(false);
   };
 
   return (
-    <div className="App">
-      <div>
-        {/* <section aria-labelledby="Book ticket"> */}
-        {/* <form onChange={getJourneyData}> */}
-        <div className='OriginStation'>
-          <label htmlFor='origin-station'> From</label>
-          <input type="text" id="origin-station" value={origin} onChange={onOriginChange} placeholder="Enter Origin Station"></input>
-          {emptyOriginErrorMessage && (
-            <p className="errorOrigin"> 'Please enter origin origin message' </p>
-          )}
-        </div>
-        <div className='DestinationStation'>
-          <label htmlFor='destination-station'> Destination</label>
-          <input type="text" id="destination-station" value={destination} onChange={onDestinationChange} placeholder="Enter Destination Station" />
-          {emptyDestinationMessage && (
-            <p className="errorDestination"> 'Please enter destination destination message' </p>
-          )}
-        </div>
-        {/* aria-disabled="true" */}
-        <button data-testid="button-search-tickets" name="button" onClick={onSubmit}>
-          Get tickets
-        </button>
-        {journeyDetailsData.map((data: any) => {
-          return (
-            <>
-              <div className='journey-details'>
-                {/* <div className='journey-details-title'>
-                  <span data-testid="journey-details-title">{data.journeyTitle}</span>
-                </div> */}
-                <div className='journey-details-price'>
-                  <label>Price:</label>
-                  <div data-testid="journey-details-price">{data.price.amount}</div>
-                </div>
-                <div className='journey-details-departs'>
-                  <label>Departs At:</label>
-                  <div>{data.departAt}</div>
-                </div></div></>)
-        })}
-        {/* </form> */}
-        {/* </section > */}
-      </div>
-
-    </div>
+    <>
+      <Routes>
+        <Route path="/"
+          element={<HomePage/>} />
+        <Route path="/JourneyPlanner"
+          element={<JourneyPlanner origin={origin} destination={destination} journeyDetailsData={journeyDetailsData} />} />
+      </Routes>
+    </>
   );
 }
 export default App;
